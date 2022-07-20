@@ -123,7 +123,7 @@ class ScheduleManagement extends Controller
         if ($type == 'feri') {
             $golongan = mGolongan::find($dataGolongan);
             $detailGolongan = mDetailGolongan::where('id_golongan', $golongan->id)->pluck('id');
-            $harga = mHarga::where('id_pelabuhan_asal', $idP1)->where('id_pelabuhan_tujuan', $idP2)->whereIn('id_detail_golongan', $detailGolongan)->where('status', 'aktif')->pluck('id');
+            $harga = mHarga::where('id_pelabuhan_asal', $idP1)->where('id_pelabuhan_tujuan', $idP2)->whereIn('id_detail_golongan', $detailGolongan)->pluck('id');
             $data1 = mDetailJadwal::with('DJJadwalAsal', 'DJJadwalTujuan')->whereIn('id_jadwal_asal', $idJadwal1)->whereIn('id_jadwal_tujuan', $idJadwal2)->where('tanggal', $tanggal)->pluck('id');
             $idDetailHarga = mDetailHarga::whereIn('id_harga', $harga)->whereIn('id_detail_jadwal', $data1)->with('DHHarga', 'DHJadwal')->get();
             $idSchedule = array();
@@ -160,7 +160,7 @@ class ScheduleManagement extends Controller
         } else {
             $golongan = mGolongan::find($dataGolongan);
             $detailGolongan = mDetailGolongan::where('id_golongan', $golongan->id)->pluck('id');
-            $harga = mHarga::where('id_pelabuhan_asal', $idP1)->where('id_pelabuhan_tujuan', $idP2)->whereIn('id_detail_golongan', $detailGolongan)->where('status', 'aktif')->pluck('id');
+            $harga = mHarga::where('id_pelabuhan_asal', $idP1)->where('id_pelabuhan_tujuan', $idP2)->whereIn('id_detail_golongan', $detailGolongan)->pluck('id');
             $data1 = mDetailJadwal::with('DJJadwalAsal', 'DJJadwalTujuan')->whereIn('id_jadwal_asal', $idJadwal1)->whereIn('id_jadwal_tujuan', $idJadwal2)->where('tanggal', $tanggal)->pluck('id');
             $idDetailHarga = mDetailHarga::whereIn('id_harga', $harga)->whereIn('id_detail_jadwal', $data1)->with('DHHarga', 'DHJadwal')->get();
             $idSchedule = array();
