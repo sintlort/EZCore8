@@ -225,7 +225,7 @@ class AccountManagement extends Controller
         $response = json_decode($request->getContent());
         $dataPembelian = mPembelian::find($response->order_id);
         $test = new test();
-        $test->test = $response;
+        $test->test = json_encode($response);
         $test->save();
         if (!empty($dataPembelian)) {
             switch ($response->fraud_status) {
