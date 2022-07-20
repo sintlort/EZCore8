@@ -16,7 +16,7 @@ class mHarga extends Model
         'harga',
         'id_pelabuhan_asal',
         'id_pelabuhan_tujuan',
-        'id_golongan',
+        'id_detail_golongan',
     ];
 
     protected $dates = ['deleted_at'];
