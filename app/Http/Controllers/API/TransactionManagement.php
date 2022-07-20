@@ -186,12 +186,16 @@ class TransactionManagement extends Controller
                             ],
                             'bank_transfer'=>[
                                 'bank'=> 'bca'
+                            ],
+                            'custom_expiry'=>[
+                                'order_time'=>$dataPembelian->created_at,
+                                'expiry_duration'=>$dataPembelian->PMetodePembayaran->payment_limit,
+                                'unit'=>'second'
                             ]
                         ])
                     ]);
                 $dataResponse = json_decode($response->getBody());
             }
-
             return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response'=>$dataResponse], 200);
         } else {
             return response()->json(['message' => 'failed', 'data' => null], 200);

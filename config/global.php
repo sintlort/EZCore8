@@ -7,8 +7,6 @@ return [
 
     'url_midtrans_base' => 'https://api.sandbox.midtrans.com/v2/',
 
-    'key_midtrans' => "Basic U0ItTWlkLXNlcnZlci0wOExVLU5INEtwTGxRNGVrNXA4X29HNHo=",
-
     'merchant_id'=>'G219026968',
 
     'client_key'=>'SB-Mid-client-AzVMgbWoIcHWcn65',
