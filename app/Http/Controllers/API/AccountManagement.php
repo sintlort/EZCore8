@@ -225,35 +225,22 @@ class AccountManagement extends Controller
         $response = json_decode($request->getContent());
         $dataPembelian = mPembelian::find($response->order_id);
         if (!empty($dataPembelian)) {
-            switch ($response->fraud_status) {
+            switch ($response->transaction_status) {
                 case "capture":
                     $dataPembelian->status= "terkonfirmasi";
-                    $dataPembelian = mPembelian::find(37);
-                    $dataPembelian->nomor_polisi = "capture";
                     $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
                     break;
                 case "settlement":
                     $dataPembelian->status= "terkonfirmasi";
-                    $dataPembelian = mPembelian::find(37);
-                    $dataPembelian->nomor_polisi = "settlement";
                     $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
                     break;
                 case "pending":
                     $dataPembelian->status= "menunggu pembayaran";
-                    $dataPembelian = mPembelian::find(37);
-                    $dataPembelian->nomor_polisi = "pending";
                     $this->sendNotificationPayment($dataPembelian->id_user, "Pembelian telah berhasil","Pembelian telah berhasil, nomor virtual number dapat dilihat pada menu transaksi");
                     break;
                 default:
-                    $dataPembelian = mPembelian::find(37);
-                    $dataPembelian->nomor_polisi = "default";
-                    $dataPembelian->save();
                     break;
             }
-            $dataPembelian->save();
-        } else {
-            $dataPembelian = mPembelian::find(37);
-            $dataPembelian->nomor_polisi = "not found";
             $dataPembelian->save();
         }
         return response()->json('', 200);
