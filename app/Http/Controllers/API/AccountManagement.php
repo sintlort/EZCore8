@@ -144,7 +144,7 @@ class AccountManagement extends Controller
         $user = mUser::find(Auth::id());
         if (!empty($user)) {
             $data = mUserNotification::where('id', $request->id)->where('user_id', Auth::id())->first();
-            if ($request->action) {
+            if ($request->action == "true") {
                 if (!empty($data)) {
                     $data->status = 1;
                     $data->save();
