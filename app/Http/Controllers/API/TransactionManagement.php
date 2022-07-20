@@ -186,11 +186,6 @@ class TransactionManagement extends Controller
                             ],
                             'bank_transfer'=>[
                                 'bank'=> 'bca'
-                            ],
-                            'custom_expiry'=>[
-                                'order_time'=>$dataPembelian->created_at,
-                                'expiry_duration'=>$dataPembelian->PMetodePembayaran->payment_limit,
-                                'unit'=>'second'
                             ]
                         ])
                     ]);
