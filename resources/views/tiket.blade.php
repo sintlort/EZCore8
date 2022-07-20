@@ -109,7 +109,7 @@
                         <td>
                             <b style="font-size: 20px;">
                                 E-Ticket</b><br/>
-                            Pelayaran {{$data->PDetailHarga->DHJadwal->JKapal->nama_kapal}}<br/>
+                            Pelayaran {{$data->PDetailHarga->DHJadwal->DJKapal->nama_kapal}}<br/>
                             <b style="font-size: 10px;">
                                 Created #: {{date('D F Y H:m', strtotime($data->created_at))}}
                             </b>

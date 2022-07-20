@@ -23,6 +23,7 @@ Route::controller(AccountManagement::class)->group(function () {
     Route::post('/login', 'login');
     Route::post('/register', 'register');
     Route::post('/notification/handler/midtrans','notificationHandler');
+    Route::get('/make-ticket-handler/{order_id}','makeTicketHandler');
 
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/user', 'user');
