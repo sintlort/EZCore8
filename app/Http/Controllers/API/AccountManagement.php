@@ -228,15 +228,20 @@ class AccountManagement extends Controller
             switch ($response->fraud_status) {
                 case "capture":
                     $dataPembelian->status= "terkonfirmasi";
+                    $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
                     break;
                 case "settlement":
                     $dataPembelian->status= "terkonfirmasi";
+                    $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
+                    break;
+                case "pending":
+                    $dataPembelian->status= "menunggu pembayaran";
+                    $this->sendNotificationPayment($dataPembelian->id_user, "Pembelian telah berhasil","Pembelian telah berhasil, nomor virtual number dapat dilihat pada menu transaksi");
                     break;
                 default:
                     break;
             }
             $dataPembelian->save();
-            $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
         }
         return response()->json('', 200);
     }
