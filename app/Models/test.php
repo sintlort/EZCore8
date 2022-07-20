@@ -9,5 +9,5 @@ class test extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_user';
+    protected $table = 'test';
 }

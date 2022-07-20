@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\mPembelian;
 use App\Models\mUser;
 use App\Models\mUserNotification;
 use App\Models\test;
@@ -167,7 +168,7 @@ class AccountManagement extends Controller
 
     public function sendNotificationTest()
     {
-        $recipients = mUser::where('fcm_token','!=','')->pluck('fcm_token')->toArray();
+        $recipients = mUser::where('fcm_token', '!=', '')->pluck('fcm_token')->toArray();
 
         fcm()
             ->to($recipients)
@@ -180,18 +181,19 @@ class AccountManagement extends Controller
             ->send();
     }
 
-    public function sendNotification(Request $request){
-        $recipients = mUser::whereIn('user_id',$request->input('user_id'))->pluck('fcm_token')->toArray();
+    public function sendNotification(Request $request)
+    {
+        $recipients = mUser::whereIn('user_id', $request->input('user_id'))->pluck('fcm_token')->toArray();
 
-        foreach ($request->input('user_id') as $item){
+        foreach ($request->input('user_id') as $item) {
             mUserNotification::create([
-                'user_id'=>$item,
-                'title'=>$request->title,
-                'body'=>$request->body,
-                'notification_by'=>$request->notification_by,
-                'status'=>0,
-                'type'=>$request->notification_type,
-                'click_action'=>$request->click_action,
+                'user_id' => $item,
+                'title' => $request->title,
+                'body' => $request->body,
+                'notification_by' => $request->notification_by,
+                'status' => 0,
+                'type' => $request->notification_type,
+                'click_action' => $request->click_action,
             ]);
         }
 
@@ -218,10 +220,50 @@ class AccountManagement extends Controller
         }
     }
 
-    public function notificationHandler(Request $request){
-        $data = new test();
-        $data->test(json_encode($request->all()));
-        $data->save();
-        return response()->json('',200);
+    public function notificationHandler(Request $request)
+    {
+        $response = json_decode($request->getContent());
+        $dataPembelian = mPembelian::find($response->order_id);
+        if (!empty($dataPembelian)) {
+            switch ($response->fraud_status) {
+                case "capture":
+                    $dataPembelian->status= "terkonfirmasi";
+                    break;
+                case "settlement":
+                    $dataPembelian->status= "terkonfirmasi";
+                    break;
+                default:
+                    break;
+            }
+            $dataPembelian->save();
+            $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
+        }
+        return response()->json('', 200);
+    }
+
+    public function sendNotificationPayment($user_id,$title, $body){
+        $recipients = mUser::where('fcm_token', '!=', '')->where('id',$user_id)->pluck('fcm_token')->toArray();
+        $recipientsNotification = mUser::where('fcm_token', '!=', '')->where('id',$user_id)->get();
+        fcm()
+            ->to($recipients)
+            ->priority('high')
+            ->timeToLive(0)
+            ->notification([
+                'title' => $title,
+                'body' => $body,
+            ])
+            ->send();
+
+        foreach ($recipientsNotification as $item) {
+            mUserNotification::create([
+                'user_id' => $item->id,
+                'title' => $title,
+                'body' => $body,
+                'notification_by' => 1,
+                'status' => 0,
+                'type' => 0,
+                'click_action' => 'transaction',
+            ]);
+        }
     }
 }
