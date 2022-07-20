@@ -30,6 +30,6 @@ class mHarga extends Model
     }
 
     public function HDetailGolongan(){
-        return $this->belongsTo('App\Models\mDetailGolongan','id_golongan');
+        return $this->belongsTo('App\Models\mDetailGolongan','id_detail_golongan');
     }
 }
