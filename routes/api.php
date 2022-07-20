@@ -44,6 +44,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('transaction/history', 'getTransactionHistory');
         Route::POST('transaction/my/penumpang', 'getPenumpang');
         Route::POST('transaction/cancel', 'transactionCanceled');
+        Route::POST('transaction/midtrans/status', 'checkStatusMidtrans');
         Route::POST('refresh/transaction','getTransactionData');
     });
 
