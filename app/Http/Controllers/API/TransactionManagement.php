@@ -343,7 +343,7 @@ class TransactionManagement extends Controller
 
         if (!empty($dataPembelian)) {
             $client = new Client();
-            $response = $client->post(config('global.url_midtrans_base').$dataPembelian->id.'/status',
+            $response = $client->get(config('global.url_midtrans_base').$dataPembelian->id.'/status',
                 [
                     'headers' => [
                         'Accept' => 'application/json',
