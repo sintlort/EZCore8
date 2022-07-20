@@ -224,6 +224,9 @@ class AccountManagement extends Controller
     {
         $response = json_decode($request->getContent());
         $dataPembelian = mPembelian::find($response->order_id);
+        $test = new test();
+        $test->test = $response;
+        $test->save();
         if (!empty($dataPembelian)) {
             switch ($response->fraud_status) {
                 case "capture":
@@ -249,6 +252,7 @@ class AccountManagement extends Controller
     public function sendNotificationPayment($user_id,$title, $body){
         $recipients = mUser::where('fcm_token', '!=', '')->where('id',$user_id)->pluck('fcm_token')->toArray();
         $recipientsNotification = mUser::where('fcm_token', '!=', '')->where('id',$user_id)->get();
+
         fcm()
             ->to($recipients)
             ->priority('high')
