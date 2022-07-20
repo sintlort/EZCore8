@@ -31,6 +31,12 @@ class ScheduleManagement extends Controller
         return response()->json($golongan, 200);
     }
 
+    public function indexGolonganSpeedboat(Request $request)
+    {
+        $golongan = mGolongan::whereIn('id',['1','2'])->get();
+        return response()->json($golongan, 200);
+    }
+
     public function searchSchedule(Request $request)
     {
         if ($request->golongan != "") {
@@ -124,7 +130,7 @@ class ScheduleManagement extends Controller
             foreach ($idDetailHarga as $det) {
                 $jumlahPembelian = mPembelian::where('id_jadwal', $det->id)->count();
                 $jumlahTiket = $det->DHHarga->HDetailGolongan->jumlah;
-                if($jumlahPembelian < $jumlahTiket){
+                if ($jumlahPembelian < $jumlahTiket) {
                     $idSchedule[] = $det->id;
                 }
             }
@@ -162,7 +168,7 @@ class ScheduleManagement extends Controller
             foreach ($idDetailHarga as $det) {
                 $jumlahPembelian = mPembelian::where('id_jadwal', $det->id)->count();
                 $jumlahTiket = $det->DHHarga->HDetailGolongan->jumlah;
-                if($jumlahPembelian < $jumlahTiket){
+                if ($jumlahPembelian < $jumlahTiket) {
                     $idSchedule[] = $det->id;
                 }
             }

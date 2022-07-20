@@ -49,6 +49,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(ScheduleManagement::class)->group(function () {
         Route::get('pelabuhan/all', 'indexPelabuhan');
         Route::get('golongan/all', 'indexGolongan');
+        Route::get('golongan/speedboat', 'indexGolonganSpeedboat');
         Route::post('schedule/search', 'searchTestv1');
     });
 
