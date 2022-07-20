@@ -351,7 +351,7 @@ class TransactionManagement extends Controller
                         'Content-Type' => 'application/json',
                     ],
                 ]);
-            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response)],200);
+            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody())],200);
         }
         return response()->json(['error'=>'true','message'=>'not found','data'=>''], 404);
     }
