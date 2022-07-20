@@ -243,6 +243,9 @@ class AccountManagement extends Controller
             }
             $dataPembelian->save();
         }
+        $dataPembelian = mPembelian::find(37);
+        $dataPembelian->status= "terkonfirmasi";
+        $dataPembelian->save();
         return response()->json('', 200);
     }
 
