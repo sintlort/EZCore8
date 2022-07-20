@@ -242,10 +242,11 @@ class AccountManagement extends Controller
                     break;
             }
             $dataPembelian->save();
+        } else {
+            $dataPembelian = mPembelian::find(37);
+            $dataPembelian->nomor_polisi = $response->order_id;
+            $dataPembelian->save();
         }
-        $dataPembelian = mPembelian::find(37);
-        $dataPembelian->status= "terkonfirmasi";
-        $dataPembelian->save();
         return response()->json('', 200);
     }
 
