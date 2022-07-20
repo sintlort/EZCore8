@@ -10,6 +10,7 @@ use App\Models\test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AccountManagement extends Controller
 {
@@ -228,10 +229,12 @@ class AccountManagement extends Controller
             switch ($response->transaction_status) {
                 case "capture":
                     $dataPembelian->status= "terkonfirmasi";
+                    $this->makeTicketHandler($dataPembelian->id);
                     $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
                     break;
                 case "settlement":
                     $dataPembelian->status= "terkonfirmasi";
+                    $this->makeTicketHandler($dataPembelian->id);
                     $this->sendNotificationPayment($dataPembelian->id_user, "Transaksi telah dibayarkan","Transaksi telah dibayarkan, tiket dapat dilihat pada menu transaksi");
                     break;
                 case "pending":
@@ -244,6 +247,17 @@ class AccountManagement extends Controller
             $dataPembelian->save();
         }
         return response()->json('', 200);
+    }
+
+    public function makeTicketHandler($order_id){
+        $data = mPembelian::where('id',$order_id)->with('PUser','PDetailPembelian','PDetailHarga','PMetodePembayaran')->first();
+        $pdf = \PDF::loadView('tiket', compact('data'));
+        $output = $pdf->output();
+        $filename = time() . Str::random(5);
+        $ticketname = $filename . '.pdf';
+        Storage::disk('public')->put('/ticket_pdf/' . $ticketname, $output);
+        $data->file_tiket = $filename;
+        $data->save();
     }
 
     public function sendNotificationPayment($user_id,$title, $body){
