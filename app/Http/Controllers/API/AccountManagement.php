@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\mUser;
 use App\Models\mUserNotification;
+use App\Models\test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -215,5 +216,12 @@ class AccountManagement extends Controller
         } else {
             return response()->json(['errors' => 'true', 'message' => 'not found', 'data' => ''], 400);
         }
+    }
+
+    public function notificationHandler(Request $request){
+        $data = new test();
+        $data->test(json_encode($request->all()));
+        $data->save();
+        return response()->json('',200);
     }
 }

@@ -34,6 +34,7 @@ Route::controller(AccountManagement::class)->group(function () {
         Route::post('/notification/update', 'notificationUpdate');
         Route::post('/receive/fcm', 'receiveFCMToken');
         Route::get('/send/fcm', 'sendNotificationTest');
+        Route::post('/notification/handler/midtrans','notificationHandler');
     });
 });
 
