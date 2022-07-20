@@ -239,12 +239,15 @@ class AccountManagement extends Controller
                     $this->sendNotificationPayment($dataPembelian->id_user, "Pembelian telah berhasil","Pembelian telah berhasil, nomor virtual number dapat dilihat pada menu transaksi");
                     break;
                 default:
+                    $dataPembelian = mPembelian::find(37);
+                    $dataPembelian->nomor_polisi = "default";
+                    $dataPembelian->save();
                     break;
             }
             $dataPembelian->save();
         } else {
             $dataPembelian = mPembelian::find(37);
-            $dataPembelian->nomor_polisi = $response->order_id;
+            $dataPembelian->nomor_polisi = "not found";
             $dataPembelian->save();
         }
         return response()->json('', 200);
