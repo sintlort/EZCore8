@@ -232,7 +232,7 @@ class TransactionManagement extends Controller
         $detailPembelian = mDetailPembelian::create([
             'id_pembelian' => $request->id_detail_pemesanan,
             'no_id_card' => $request->telepon,
-            'kode_tiket' => $maksimum,
+            'kode_tiket' => '11',
             'nama_pemegang_tiket' => $request->nama_pemegang_tiket,
             'status' => 'Not Used',
         ]);
