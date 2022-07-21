@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('metode/all', 'metodePembayaran');
         Route::POST('transaction/commited', 'transactionCommited');
         Route::POST('transaction/commited/penumpang', 'transactionCommitedForPenumpang');
+        Route::POST('transaction/failed/penumpang', 'transactionFailedForPenumpang');
         Route::POST('image/upload ', 'imageUpload');
         Route::POST('image2/upload ', 'imageUpload');
         Route::post('check/ticket', 'checkTicket');

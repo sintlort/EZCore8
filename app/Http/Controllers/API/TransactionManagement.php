@@ -166,6 +166,21 @@ class TransactionManagement extends Controller
                 ]);
             }
 
+            $namaPenumpang = json_decode($request->nama_penumpang);
+            $nomorPenumpang = json_decode($request->nomor_penumpang);
+
+            foreach ($namaPenumpang as $index => $item){
+                $maxPembelian = mDetailPembelian::orderBy('id_detail_pembelian','desc')->first();
+                $maksimum = $maxPembelian->kode_tiket+1;
+                $detailPembelian = mDetailPembelian::create([
+                    'id_pembelian' => $pembelian->id,
+                    'no_id_card' => $nomorPenumpang[$index],
+                    'kode_tiket' => $maksimum,
+                    'nama_pemegang_tiket' => $item,
+                    'status' => 'Not Used',
+                ]);
+            }
+
             $dataPembelian = mPembelian::with('PMetodePembayaran')->where('id', $pembelian->id)->first();
 
             if (!empty($dataPembelian)) {
@@ -227,17 +242,26 @@ class TransactionManagement extends Controller
     public function transactionCommitedForPenumpang(Request $request)
     {
 
-        $maxPembelian = mDetailPembelian::orderBy('id','desc')->first();
+        $maxPembelian = mDetailPembelian::orderBy('id_detail_pembelian','desc')->first();
         $maksimum = $maxPembelian->kode_tiket+1;
         $detailPembelian = mDetailPembelian::create([
             'id_pembelian' => $request->id_detail_pemesanan,
             'no_id_card' => $request->telepon,
-            'kode_tiket' => '11',
+            'kode_tiket' => $maksimum,
             'nama_pemegang_tiket' => $request->nama_pemegang_tiket,
             'status' => 'Not Used',
         ]);
 
         return response()->json(['message' => 'success', 'data' => $detailPembelian], 200);
+    }
+
+    public function transactionFailedForPenumpang(Request $request)
+    {
+
+        $dataPembelian = mPembelian::find($request->id_detail_pembelian);
+        $dataPembelian->delete();
+
+        return response()->json(['message' => 'success', 'data' => $dataPembelian], 200);
     }
 
     public function getTransactionRecently()
