@@ -228,10 +228,11 @@ class TransactionManagement extends Controller
     {
 
         $maxPembelian = mDetailPembelian::max('kode_tiket');
+        $maksimum = $maxPembelian+1;
         $detailPembelian = mDetailPembelian::create([
             'id_pembelian' => $request->id_detail_pemesanan,
             'no_id_card' => $request->telepon,
-            'kode_tiket' => $maxPembelian + 1,
+            'kode_tiket' => $maksimum,
             'nama_pemegang_tiket' => $request->nama_pemegang_tiket,
             'status' => 'Not Used',
         ]);
