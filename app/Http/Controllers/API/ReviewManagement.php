@@ -29,18 +29,26 @@ class ReviewManagement extends Controller
     {
         $data = mReview::where('id_pembelian', $request->id_pembelian)->first();
         if (empty($data)) {
-            $dataReview = mReview::create([
-                'id_user'=>Auth::user()->id,
-                'id_pembelian' => $request->id_pembelian,
-                'review' => $request->isi_review,
-                'score' => $request->score,
-            ]);
-            return response()->json(['message' => 'success', 'review' => $dataReview], 200);
+            if($request->isi_review != '' && $request->score != 0){
+                $dataReview = mReview::create([
+                    'id_user'=>Auth::user()->id,
+                    'id_pembelian' => $request->id_pembelian,
+                    'review' => $request->isi_review,
+                    'score' => $request->score,
+                ]);
+                return response()->json(['message' => 'success', 'review' => $dataReview], 200);
+            } else {
+                return response()->json(['message' => 'failed', 'review' => ''], 400);
+            }
         } else {
-            $data->review = $request->isi_review;
-            $data->score = $request->score;
-            $data->save();
-            return response()->json(['message' => 'success', 'review' => $data], 200);
+            if($request->isi_review != '' && $request->score != 0){
+                $data->review = $request->isi_review;
+                $data->score = $request->score;
+                $data->save();
+                return response()->json(['message' => 'success', 'review' => $data], 200);
+            } else {
+                return response()->json(['message' => 'failed', 'review' => ''], 400);
+            }
         }
     }
 
