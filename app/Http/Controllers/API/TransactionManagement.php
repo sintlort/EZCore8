@@ -227,8 +227,8 @@ class TransactionManagement extends Controller
     public function transactionCommitedForPenumpang(Request $request)
     {
 
-        $maxPembelian = mDetailPembelian::max('kode_tiket');
-        $maksimum = $maxPembelian+1;
+        $maxPembelian = mDetailPembelian::orderBy('id','desc')->first();
+        $maksimum = $maxPembelian->kode_tiket+1;
         $detailPembelian = mDetailPembelian::create([
             'id_pembelian' => $request->id_detail_pemesanan,
             'no_id_card' => $request->telepon,
