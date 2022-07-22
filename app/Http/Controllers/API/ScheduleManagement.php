@@ -132,7 +132,7 @@ class ScheduleManagement extends Controller
             $schedule = $detail;
             foreach ($schedule as $index => $data) {
                 $terbayarkan = 0;
-                if($golongan<=2){
+                if($dataGolongan<=2){
                     $dataPembelian = mPembelian::where('id_jadwal', $data->id)->with('PDetailPembelian')->get();
                     foreach ($dataPembelian as $item) {
                         $terbayarkan = $terbayarkan + count($item->PDetailPembelian);
@@ -172,7 +172,7 @@ class ScheduleManagement extends Controller
             $schedule = $detail;
             foreach ($schedule as $index => $data) {
                 $terbayarkan = 0;
-                if($golongan<=2){
+                if($dataGolongan<=2){
                     $dataPembelian = mPembelian::where('id_jadwal', $data->id)->with('PDetailPembelian')->get();
                     foreach ($dataPembelian as $item) {
                         $terbayarkan = $terbayarkan + count($item->PDetailPembelian);
