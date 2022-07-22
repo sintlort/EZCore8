@@ -9,6 +9,7 @@ use App\Models\mDetailGolongan;
 use App\Models\mDetailHarga;
 use App\Models\mDetailJadwal;
 use App\Models\mGolongan;
+use App\Models\mHakKapal;
 use App\Models\mHarga;
 use App\Models\mJadwal;
 use App\Models\mKapal;
@@ -16,6 +17,7 @@ use App\Models\mPelabuhan;
 use App\Models\mPembelian;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ScheduleManagement extends Controller
 {
@@ -33,7 +35,7 @@ class ScheduleManagement extends Controller
 
     public function indexGolonganSpeedboat(Request $request)
     {
-        $golongan = mGolongan::whereIn('id',['1','2'])->get();
+        $golongan = mGolongan::whereIn('id', ['1', '2'])->get();
         return response()->json($golongan, 200);
     }
 
@@ -196,5 +198,30 @@ class ScheduleManagement extends Controller
             }
         }
         return response()->json($schedule, 200);
+    }
+
+    public function getKapal(Request $request)
+    {
+        $user = Auth::id();
+        $getIdKapal = mHakKapal::where('id_user', $user)->where('hak_akses', "TAdmin")->first();
+        $getKapal = mKapal::where('id', $getIdKapal->id_kapal)->first();
+        if (!empty($getKapal)) {
+            return response()->json(['error' => 'false', 'message' => 'data found', 'data' => $getKapal], 200);
+        } else {
+            return response()->json(['error' => 'true', 'message' => 'data not found', 'data' => $getKapal], 400);
+        }
+    }
+
+    public function getJadwalKapal(Request $request)
+    {
+        $user = Auth::id();
+        $getIdKapal = mHakKapal::where('id_user', $user)->where('hak_akses', "TAdmin")->first();
+        $getKapal = mKapal::where('id', $getIdKapal->id_kapal)->first();
+        if (!empty($getKapal)) {
+            $getJadwal = mDetailJadwal::where('id_kapal',$getKapal->id)->get();
+            return response()->json(['error' => 'false', 'message' => 'data found', 'data' => $getJadwal], 200);
+        } else {
+            return response()->json(['error' => 'true', 'message' => 'data not found', 'data' => $getKapal], 400);
+        }
     }
 }

@@ -14,6 +14,7 @@ class mHakKapal extends Model
 
     protected $fillable = [
         'id_kapal',
-        'id_user'
+        'id_user',
+        'hak_akses'
     ];
 }

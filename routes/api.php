@@ -54,6 +54,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('golongan/all', 'indexGolongan');
         Route::get('golongan/speedboat', 'indexGolonganSpeedboat');
         Route::post('schedule/search', 'searchTestv1');
+        Route::post('get/kapal', 'getKapal');
+        Route::post('get/kapal/jadwal', 'getJadwalKapal');
     });
 
     Route::controller(TransactionManagement::class)->group(function () {
