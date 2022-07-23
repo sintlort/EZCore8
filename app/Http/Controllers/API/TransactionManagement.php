@@ -141,10 +141,10 @@ class TransactionManagement extends Controller
     public function transactionCommited(Request $request)
     {
         $getIDetail = mDetailHarga::with('DHHarga')->where('id', $request->id_detail)->first();
-        $golongan = $getIDetail->DHHarga->HDetailGolongan->DGGolongan->golongan;
+        $golongan = $getIDetail->DHHarga->HDetailGolongan->DGGolongan->id;
 
         if (!empty($getIDetail)) {
-            if ($golongan == "Penumpang") {
+            if ($golongan <=2) {
                 $pembelian = mPembelian::create([
                     'id_metode_pembayaran' => $request->id_metode_pembayaran,
                     'id_jadwal' => $request->id_detail,
