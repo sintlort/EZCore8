@@ -184,6 +184,8 @@ class TransactionManagement extends Controller
             $dataPembelian = mPembelian::with('PMetodePembayaran')->where('id', $pembelian->id)->first();
 
             if (!empty($dataPembelian)) {
+                $dateorderTime = Carbon::parse($dataPembelian->created_at);
+                $dateorderTime->addMinutes(1);
                 $client = new Client();
                 $response = $client->post(config('global.url_midtrans'),
                     [
@@ -203,15 +205,15 @@ class TransactionManagement extends Controller
                                 'bank'=> 'bca'
                             ],
                             'custom_expiry'=>[
-                                'order_time'=>$dataPembelian->created_at,
-                                'expiry_duration'=>1,
-                                'unit'=>'day'
+                                'order_time'=>$dateorderTime->format('Y-m-d H:m:s').' +0800',
+                                'expiry_duration'=>61,
+                                'unit'=>'minute'
                             ],
                         ])
                     ]);
                 $dataResponse = json_decode($response->getBody());
             }
-            return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response'=>$dataResponse], 200);
+            return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response'=>$dataResponse,'expiry'=>$dateorderTime->format('Y-m-d H:m:s')], 200);
         } else {
             return response()->json(['message' => 'failed', 'data' => null], 200);
         }
@@ -372,6 +374,8 @@ class TransactionManagement extends Controller
         $dataPembelian = mPembelian::with('PMetodePembayaran')->where('id', $request->id)->first();
 
         if (!empty($dataPembelian)) {
+            $dateorderTime = Carbon::parse($dataPembelian->created_at);
+            $dateorderTime->addMinutes(61);
             $client = new Client();
             $response = $client->get(config('global.url_midtrans_base').$dataPembelian->id.'/status',
                 [
@@ -381,7 +385,7 @@ class TransactionManagement extends Controller
                         'Content-Type' => 'application/json',
                     ],
                 ]);
-            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody())],200);
+            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody()),'expiry'=>$dateorderTime->format('Y-m-d H:m:s')],200);
         }
         return response()->json(['error'=>'true','message'=>'not found','data'=>''], 404);
     }
