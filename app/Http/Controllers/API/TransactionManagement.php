@@ -206,14 +206,14 @@ class TransactionManagement extends Controller
                             ],
                             'custom_expiry'=>[
                                 'order_time'=>$dateorderTime->format('Y-m-d H:m:s').' +0800',
-                                'expiry_duration'=>61,
+                                'expiry_duration'=>60,
                                 'unit'=>'minute'
                             ],
                         ])
                     ]);
                 $dataResponse = json_decode($response->getBody());
             }
-            return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response'=>$dataResponse,'expiry'=>$dateorderTime->format('Y-m-d H:m:s')], 200);
+            return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response'=>$dataResponse,'expiry'=>$dateorderTime->addMinutes(60)->format('Y-m-d H:m:s')], 200);
         } else {
             return response()->json(['message' => 'failed', 'data' => null], 200);
         }
@@ -385,7 +385,7 @@ class TransactionManagement extends Controller
                         'Content-Type' => 'application/json',
                     ],
                 ]);
-            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody()),'expiry'=>$dateorderTime->format('Y-m-d H:m:s')],200);
+            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody()),'expiry'=>$dateorderTime->addMinutes(60)->format('Y-m-d H:m:s')],200);
         }
         return response()->json(['error'=>'true','message'=>'not found','data'=>''], 404);
     }
