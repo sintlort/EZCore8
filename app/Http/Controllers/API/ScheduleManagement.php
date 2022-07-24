@@ -223,7 +223,19 @@ class ScheduleManagement extends Controller
         $getIdKapal = mHakKapal::where('id_user', $user)->where('hak_akses', "TAdmin")->first();
         $getKapal = mKapal::where('id', $getIdKapal->id_kapal)->first();
         if (!empty($getKapal)) {
-            $getJadwal = mDetailJadwal::where('id_kapal',$getKapal->id)->get();
+            $getJadwal = mDetailJadwal::where('id_kapal',$getKapal->id)->with('DJJadwalAsal','DJJadwalTujuan')->get();
+            foreach ($getJadwal as $index => $item){
+                $getJadwal[$index]->asal_pelabuhan = $item->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
+                $getJadwal[$index]->tujuan_pelabuhan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->nama_pelabuhan;
+                $getJadwal[$index]->kode_pelabuhan_asal = $item->DJJadwalAsal->JDermaga->DPelabuhan->kode_pelabuhan;
+                $getJadwal[$index]->kode_pelabuhan_tujuan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->kode_pelabuhan;
+                $getJadwal[$index]->waktu_berangkat = $item->DJJadwalAsal->waktu;
+                $getJadwal[$index]->waktu_sampai = $item->DJJadwalTujuan->waktu;
+                $getJadwal[$index]->nama_dermaga_asal = $item->DJJadwalAsal->JDermaga->nama_dermaga;
+                $getJadwal[$index]->nama_dermaga_tujuan = $item->DJJadwalTujuan->JDermaga->nama_dermaga;
+                $getJadwal[$index]->status_pelabuhan_asal = $item->DJJadwalAsal->JDermaga->DPelabuhan->status_pelabuhan;
+                $getJadwal[$index]->status_pelabuhan_tujuan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->status_pelabuhan;
+            }
             return response()->json(['error' => 'false', 'message' => 'data found', 'data' => $getJadwal], 200);
         } else {
             return response()->json(['error' => 'true', 'message' => 'data not found', 'data' => $getKapal], 400);
