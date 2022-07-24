@@ -385,7 +385,7 @@ class TransactionManagement extends Controller
                         'Content-Type' => 'application/json',
                     ],
                 ]);
-            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody()),'expiry'=>$dateorderTime->addMinutes(60)->format('Y-m-d H:m:s')],200);
+            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody()),'expiry'=>$dateorderTime->format('Y-m-d H:m:s')],200);
         }
         return response()->json(['error'=>'true','message'=>'not found','data'=>''], 404);
     }
