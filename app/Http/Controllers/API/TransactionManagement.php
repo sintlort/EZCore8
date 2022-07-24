@@ -205,7 +205,7 @@ class TransactionManagement extends Controller
                                 'bank'=> 'bca'
                             ],
                             'custom_expiry'=>[
-                                'order_time'=>$dateorderTime->format('Y-m-d H:m:s').' +0800',
+                                'order_time'=>$dateorderTime->format('Y-m-d H:m:s').' +0700',
                                 'expiry_duration'=>60,
                                 'unit'=>'minute'
                             ],
