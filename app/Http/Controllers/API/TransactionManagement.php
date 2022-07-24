@@ -201,7 +201,12 @@ class TransactionManagement extends Controller
                             ],
                             'bank_transfer'=>[
                                 'bank'=> 'bca'
-                            ]
+                            ],
+                            'custom_expiry'=>[
+                                'order_time'=>$dataPembelian->created_at,
+                                'expiry_duration'=>1,
+                                'unit'=>'day'
+                            ],
                         ])
                     ]);
                 $dataResponse = json_decode($response->getBody());
