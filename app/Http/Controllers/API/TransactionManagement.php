@@ -185,7 +185,6 @@ class TransactionManagement extends Controller
 
             if (!empty($dataPembelian)) {
                 $dateorderTime = Carbon::parse($dataPembelian->created_at);
-                $dateorderTime->addMinutes(1);
                 $client = new Client();
                 $response = $client->post(config('global.url_midtrans'),
                     [
@@ -375,7 +374,7 @@ class TransactionManagement extends Controller
 
         if (!empty($dataPembelian)) {
             $dateorderTime = Carbon::parse($dataPembelian->created_at);
-            $dateorderTime->addMinutes(61);
+            $dateorderTime->addMinutes(60);
             $client = new Client();
             $response = $client->get(config('global.url_midtrans_base').$dataPembelian->id.'/status',
                 [
