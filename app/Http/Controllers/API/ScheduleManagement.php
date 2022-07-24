@@ -133,12 +133,12 @@ class ScheduleManagement extends Controller
             foreach ($schedule as $index => $data) {
                 $terbayarkan = 0;
                 if($dataGolongan<=2){
-                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->with('PDetailPembelian')->get();
+                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->with('PDetailPembelian')->get();
                     foreach ($dataPembelian as $item) {
                         $terbayarkan = $terbayarkan + count($item->PDetailPembelian);
                     }
                 } else {
-                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->count();
+                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->count();
                 }
                 $day = MyDateTime::DateToDayConverter($data->DHJadwal->tanggal);
                 $schedule[$index]->nama_asal = $data->DHJadwal->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
@@ -173,12 +173,12 @@ class ScheduleManagement extends Controller
             foreach ($schedule as $index => $data) {
                 $terbayarkan = 0;
                 if($dataGolongan<=2){
-                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->with('PDetailPembelian')->get();
+                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->with('PDetailPembelian')->get();
                     foreach ($dataPembelian as $item) {
                         $terbayarkan = $terbayarkan + count($item->PDetailPembelian);
                     }
                 } else {
-                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->count();
+                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->count();
                 }
                 $day = MyDateTime::DateToDayConverter($data->DHJadwal->tanggal);
                 $schedule[$index]->nama_asal = $data->DHJadwal->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
