@@ -242,6 +242,10 @@ class AccountManagement extends Controller
                     $dataPembelian->status= "menunggu pembayaran";
                     $this->sendNotificationPayment($dataPembelian->id_user, "Pembelian telah berhasil","Pembelian telah berhasil, nomor virtual number dapat dilihat pada menu transaksi");
                     break;
+                case "expire":
+                    $dataPembelian->status= "expired";
+                    $this->sendNotificationPayment($dataPembelian->id_user, "Pembelian Gagal","Maaf, pembelian yang anda lakukan telah gagal dikarenakan melewati waktu yang telah ditentukan");
+                    break;
                 default:
                     break;
             }
