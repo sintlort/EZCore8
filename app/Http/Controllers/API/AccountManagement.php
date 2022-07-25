@@ -41,7 +41,7 @@ class AccountManagement extends Controller
     {
         $credentials = $request->validate([
             'nama' => 'required',
-            'email' => 'required|email|unique:App\Models\mUser,email',
+            'email' => 'required|email',
             'password' => 'required',
             'alamat' => 'required',
             'nohp' => 'required',
