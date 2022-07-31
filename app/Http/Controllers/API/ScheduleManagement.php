@@ -284,6 +284,8 @@ class ScheduleManagement extends Controller
                 });
             }
 
+            $getJadwal = $getJadwal->get();
+
             foreach ($getJadwal as $index => $item) {
                 $getJadwal[$index]->asal_pelabuhan = $item->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
                 $getJadwal[$index]->tujuan_pelabuhan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->nama_pelabuhan;
