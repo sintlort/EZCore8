@@ -47,6 +47,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::POST('transaction/cancel', 'transactionCanceled');
         Route::POST('transaction/midtrans/status', 'checkStatusMidtrans');
         Route::POST('refresh/transaction','getTransactionData');
+
     });
 
     Route::controller(ScheduleManagement::class)->group(function () {
@@ -56,6 +57,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('schedule/search', 'searchTestv1');
         Route::post('get/kapal', 'getKapal');
         Route::post('get/kapal/jadwal', 'getJadwalKapal');
+        Route::post('/jadwal/filter','getJadwalKapalFilter');
     });
 
     Route::controller(TransactionManagement::class)->group(function () {

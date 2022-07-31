@@ -132,13 +132,13 @@ class ScheduleManagement extends Controller
             $schedule = $detail;
             foreach ($schedule as $index => $data) {
                 $terbayarkan = 0;
-                if($dataGolongan<=2){
-                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->with('PDetailPembelian')->get();
+                if ($dataGolongan <= 2) {
+                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->where('status', 'terkonfirmasi')->with('PDetailPembelian')->get();
                     foreach ($dataPembelian as $item) {
                         $terbayarkan = $terbayarkan + count($item->PDetailPembelian);
                     }
                 } else {
-                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->count();
+                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->where('status', 'terkonfirmasi')->count();
                 }
                 $day = MyDateTime::DateToDayConverter($data->DHJadwal->tanggal);
                 $schedule[$index]->nama_asal = $data->DHJadwal->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
@@ -165,20 +165,20 @@ class ScheduleManagement extends Controller
             $golongan = mGolongan::find($dataGolongan);
             $detailGolongan = mDetailGolongan::where('id_golongan', $golongan->id)->pluck('id');
             $harga = mHarga::where('id_pelabuhan_asal', $idP1)->where('id_pelabuhan_tujuan', $idP2)->whereIn('id_detail_golongan', $detailGolongan)->pluck('id');
-            $tipeKapal = mKapal::where('tipe_kapal','!=','feri')->pluck('id');
-            $data1 = mDetailJadwal::with('DJJadwalAsal', 'DJJadwalTujuan')->whereIn('id_kapal',$tipeKapal)->whereIn('id_jadwal_asal', $idJadwal1)->whereIn('id_jadwal_tujuan', $idJadwal2)->where('tanggal', $tanggal)->pluck('id');
+            $tipeKapal = mKapal::where('tipe_kapal', '!=', 'feri')->pluck('id');
+            $data1 = mDetailJadwal::with('DJJadwalAsal', 'DJJadwalTujuan')->whereIn('id_kapal', $tipeKapal)->whereIn('id_jadwal_asal', $idJadwal1)->whereIn('id_jadwal_tujuan', $idJadwal2)->where('tanggal', $tanggal)->pluck('id');
             $idDetailHarga = mDetailHarga::whereIn('id_harga', $harga)->whereIn('id_detail_jadwal', $data1)->with('DHHarga', 'DHJadwal')->get();
             $detail = mDetailHarga::whereIn('id_harga', $harga)->whereIn('id_detail_jadwal', $data1)->with('DHHarga', 'DHJadwal')->get();
             $schedule = $detail;
             foreach ($schedule as $index => $data) {
                 $terbayarkan = 0;
-                if($dataGolongan<=2){
-                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->with('PDetailPembelian')->get();
+                if ($dataGolongan <= 2) {
+                    $dataPembelian = mPembelian::where('id_jadwal', $data->id)->where('status', 'terkonfirmasi')->with('PDetailPembelian')->get();
                     foreach ($dataPembelian as $item) {
                         $terbayarkan = $terbayarkan + count($item->PDetailPembelian);
                     }
                 } else {
-                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->where('status','terkonfirmasi')->count();
+                    $terbayarkan = mPembelian::where('id_jadwal', $data->id)->where('status', 'terkonfirmasi')->count();
                 }
                 $day = MyDateTime::DateToDayConverter($data->DHJadwal->tanggal);
                 $schedule[$index]->nama_asal = $data->DHJadwal->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
@@ -223,8 +223,8 @@ class ScheduleManagement extends Controller
         $getIdKapal = mHakKapal::where('id_user', $user)->where('hak_akses', "TAdmin")->first();
         $getKapal = mKapal::where('id', $getIdKapal->id_kapal)->first();
         if (!empty($getKapal)) {
-            $getJadwal = mDetailJadwal::where('id_kapal',$getKapal->id)->with('DJJadwalAsal','DJJadwalTujuan')->get();
-            foreach ($getJadwal as $index => $item){
+            $getJadwal = mDetailJadwal::where('id_kapal', $getKapal->id)->with('DJJadwalAsal', 'DJJadwalTujuan')->get();
+            foreach ($getJadwal as $index => $item) {
                 $getJadwal[$index]->asal_pelabuhan = $item->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
                 $getJadwal[$index]->tujuan_pelabuhan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->nama_pelabuhan;
                 $getJadwal[$index]->kode_pelabuhan_asal = $item->DJJadwalAsal->JDermaga->DPelabuhan->kode_pelabuhan;
@@ -239,6 +239,66 @@ class ScheduleManagement extends Controller
             return response()->json(['error' => 'false', 'message' => 'data found', 'data' => $getJadwal], 200);
         } else {
             return response()->json(['error' => 'true', 'message' => 'data not found', 'data' => $getKapal], 400);
+        }
+    }
+
+    public function getJadwalKapalFilter(Request $request)
+    {
+        $user = Auth::id();
+        $getIdKapal = mHakKapal::where('id_user', $user)->where('hak_akses', "TAdmin")->first();
+        if(!empty($getIdKapal)){
+            $getKapal = mKapal::where('id', $getIdKapal->id_kapal)->first();
+            $getJadwal = mDetailJadwal::where('id_kapal', $getKapal->id)->with('DJJadwalAsal', 'DJJadwalTujuan','DJDetailHarga');
+            $asal_pelabuhan = $request->asal_pelabuhan;
+            $tujuan_pelabuhan = $request->tujuan_pelabuhan;
+            $golongan = $request->golongan;
+            if($request->filled('asal_pelabuhan')){
+                $getJadwal->whereHas('DJJadwalAsal',function ($jadwal) use ($asal_pelabuhan){
+                    $jadwal->whereHas('JDermaga',function ($dermaga) use ($asal_pelabuhan){
+                        $dermaga->whereHas('DPelabuhan',function ($pelabuhan) use ($asal_pelabuhan){
+                            $pelabuhan->where('id',$asal_pelabuhan);
+                        });
+                    });
+                });
+            }
+            if($request->filled('tujuan_pelabuhan')){
+                $getJadwal->whereHas('DJJadwalTujuan',function ($jadwal) use ($tujuan_pelabuhan){
+                    $jadwal->whereHas('JDermaga',function ($dermaga) use ($tujuan_pelabuhan){
+                        $dermaga->whereHas('DPelabuhan',function ($pelabuhan) use ($tujuan_pelabuhan){
+                            $pelabuhan->where('id',$tujuan_pelabuhan);
+                        });
+                    });
+                });
+            }
+            if($request->filled('tanggal')){
+                $getJadwal->where('tanggal',$request->tanggal);
+            }
+
+            if($request->filled('golongan')){
+                $getJadwal->whereHas('DJDetailHarga',function ($detailHarga) use ($golongan){
+                    $detailHarga->whereHas('DHHarga',function ($harga) use ($golongan){
+                        $harga->whereHas('HDetailGolongan',function ($detailGoolongan) use ($golongan){
+                            $detailGoolongan->where('id_golongan',$golongan);
+                        });
+                    });
+                });
+            }
+
+            foreach ($getJadwal as $index => $item) {
+                $getJadwal[$index]->asal_pelabuhan = $item->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
+                $getJadwal[$index]->tujuan_pelabuhan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->nama_pelabuhan;
+                $getJadwal[$index]->kode_pelabuhan_asal = $item->DJJadwalAsal->JDermaga->DPelabuhan->kode_pelabuhan;
+                $getJadwal[$index]->kode_pelabuhan_tujuan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->kode_pelabuhan;
+                $getJadwal[$index]->waktu_berangkat = $item->DJJadwalAsal->waktu;
+                $getJadwal[$index]->waktu_sampai = $item->DJJadwalTujuan->waktu;
+                $getJadwal[$index]->nama_dermaga_asal = $item->DJJadwalAsal->JDermaga->nama_dermaga;
+                $getJadwal[$index]->nama_dermaga_tujuan = $item->DJJadwalTujuan->JDermaga->nama_dermaga;
+                $getJadwal[$index]->status_pelabuhan_asal = $item->DJJadwalAsal->JDermaga->DPelabuhan->status_pelabuhan;
+                $getJadwal[$index]->status_pelabuhan_tujuan = $item->DJJadwalTujuan->JDermaga->DPelabuhan->status_pelabuhan;
+            }
+            return response()->json(['error' => 'false', 'message' => 'data found', 'data' => $getJadwal], 200);
+        } else {
+            return response()->json(['error' => 'true', 'message' => 'data not found', 'data' => ''], 400);
         }
     }
 }
