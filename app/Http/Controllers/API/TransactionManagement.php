@@ -69,29 +69,29 @@ class TransactionManagement extends Controller
 
             if (!empty($dataPembelian)) {
                 $client = new Client();
-                $response = $client->post(config('global.url_midtrans_base').$dataPembelian->id.'/status',
+                $response = $client->post(config('global.url_midtrans_base') . $dataPembelian->id . '/status',
                     [
                         'headers' => [
                             'Accept' => 'application/json',
-                            'Authorization' => 'Basic '.base64_encode(config('global.server_key_midtrans')),
+                            'Authorization' => 'Basic ' . base64_encode(config('global.server_key_midtrans')),
                             'Content-Type' => 'application/json',
                         ],
                     ]);
                 $jsonResponse = json_decode($response);
 
-                if($jsonResponse->status_code == 201){
-                    switch ($jsonResponse->transaction_status){
+                if ($jsonResponse->status_code == 201) {
+                    switch ($jsonResponse->transaction_status) {
                         case "pending":
-                            $response = $client->post(config('global.url_midtrans_base').$dataPembelian->id.'/cancel',
+                            $response = $client->post(config('global.url_midtrans_base') . $dataPembelian->id . '/cancel',
                                 [
                                     'headers' => [
                                         'Accept' => 'application/json',
-                                        'Authorization' => 'Basic '.base64_encode(config('global.server_key_midtrans')),
+                                        'Authorization' => 'Basic ' . base64_encode(config('global.server_key_midtrans')),
                                         'Content-Type' => 'application/json',
                                     ],
                                 ]);
                             $cancelResponse = json_decode($response);
-                            if($cancelResponse->status_code != 200){
+                            if ($cancelResponse->status_code != 200) {
                                 return response()->json(['message' => 'failed', 'transaction' => 'Status transaksi tidak dapat diperbaharui'], 200);
                             }
                             break;
@@ -140,11 +140,18 @@ class TransactionManagement extends Controller
 
     public function transactionCommited(Request $request)
     {
-        $getIDetail = mDetailHarga::with('DHHarga')->where('id', $request->id_detail)->first();
+        $getIDetail = mDetailHarga::with('DHHarga', 'DHJadwal')->where('id', $request->id_detail)->first();
         $golongan = $getIDetail->DHHarga->HDetailGolongan->DGGolongan->id;
+        $jadwal = mDetailJadwal::with('DJKapal')
+            ->whereHas('DJKapal', function ($kapal) use ($getIDetail) {
+                $kapal->where('tipe_kapal', $getIDetail->DHJadwal->DJKapal->tipe_kapal);
+            })
+            ->where('id_jadwal_asal', $getIDetail->DHJadwal->id_jadwal_asal)
+            ->where('id_jadwal_tujuan', $getIDetail->DHJadwal->id_jadwal_tujuan)
+            ->pluck('id');
 
         if (!empty($getIDetail)) {
-            if ($golongan <=2) {
+            if ($golongan <= 2) {
                 $pembelian = mPembelian::create([
                     'id_metode_pembayaran' => $request->id_metode_pembayaran,
                     'id_jadwal' => $request->id_detail,
@@ -169,9 +176,9 @@ class TransactionManagement extends Controller
             $namaPenumpang = json_decode($request->nama_penumpang);
             $nomorPenumpang = json_decode($request->nomor_penumpang);
 
-            foreach ($namaPenumpang as $index => $item){
-                $maxPembelian = mDetailPembelian::orderBy('id_detail_pembelian','desc')->first();
-                $maksimum = $maxPembelian->kode_tiket+1;
+            foreach ($namaPenumpang as $index => $item) {
+                $maxPembelian = mDetailPembelian::orderBy('id_detail_pembelian', 'desc')->first();
+                $maksimum = $maxPembelian->kode_tiket + 1;
                 $detailPembelian = mDetailPembelian::create([
                     'id_pembelian' => $pembelian->id,
                     'no_id_card' => $nomorPenumpang[$index],
@@ -190,29 +197,29 @@ class TransactionManagement extends Controller
                     [
                         'headers' => [
                             'Accept' => 'application/json',
-                            'Authorization' => 'Basic '.base64_encode(config('global.server_key_midtrans')),
+                            'Authorization' => 'Basic ' . base64_encode(config('global.server_key_midtrans')),
                             'Content-Type' => 'application/json',
                         ],
                         'body' => json_encode([
                             'payment_type' => 'bank_transfer',
-                            'transaction_details'=> [
-                                'order_id'=>$dataPembelian->id,
-                                'gross_amount'=>$dataPembelian->total_harga,
+                            'transaction_details' => [
+                                'order_id' => $dataPembelian->id,
+                                'gross_amount' => $dataPembelian->total_harga,
 
                             ],
-                            'bank_transfer'=>[
-                                'bank'=> 'bca'
+                            'bank_transfer' => [
+                                'bank' => 'bca'
                             ],
-                            'custom_expiry'=>[
-                                'order_time'=>$dateorderTime->format('Y-m-d H:i:s').' +0700',
-                                'expiry_duration'=>60,
-                                'unit'=>'minute'
+                            'custom_expiry' => [
+                                'order_time' => $dateorderTime->format('Y-m-d H:i:s') . ' +0700',
+                                'expiry_duration' => 60,
+                                'unit' => 'minute'
                             ],
                         ])
                     ]);
                 $dataResponse = json_decode($response->getBody());
             }
-            return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response'=>$dataResponse,'expiry'=>$dateorderTime->addMinutes(60)->format('Y-m-d H:i:s')], 200);
+            return response()->json(['message' => 'success', 'data' => $pembelian, 'midtrans_response' => $dataResponse, 'expiry' => $dateorderTime->addMinutes(60)->format('Y-m-d H:i:s')], 200);
         } else {
             return response()->json(['message' => 'failed', 'data' => null], 200);
         }
@@ -248,8 +255,8 @@ class TransactionManagement extends Controller
     public function transactionCommitedForPenumpang(Request $request)
     {
 
-        $maxPembelian = mDetailPembelian::orderBy('id_detail_pembelian','desc')->first();
-        $maksimum = $maxPembelian->kode_tiket+1;
+        $maxPembelian = mDetailPembelian::orderBy('id_detail_pembelian', 'desc')->first();
+        $maksimum = $maxPembelian->kode_tiket + 1;
         $detailPembelian = mDetailPembelian::create([
             'id_pembelian' => $request->id_detail_pemesanan,
             'no_id_card' => $request->telepon,
@@ -363,29 +370,35 @@ class TransactionManagement extends Controller
         $data = mDetailPembelian::with('DPPembelian')->where('kode_tiket', $ticket_number)->first();
         if (!empty($data)) {
             $data->tanggal = $data->DPPembelian->tanggal;
+            $data->pelabuhan_asal = $data->DPPembelian->PDetailHarga->DHJadwal->DJJadwalAsal->JDermaga->DPelabuhan->nama_pelabuhan;
+            $data->pelabuhan_tujuan = $data->DPPembelian->PDetailHarga->DHJadwal->DJJadwalTujuan->JDermaga->DPelabuhan->nama_pelabuhan;
+            $data->kapal = $data->DPPembelian->PDetailHarga->DHJadwal->DJKapal->nama_kapal;
+            $data->waktu_asal = $data->DPPembelian->PDetailHarga->DHJadwal->DJJadwalAsal->waktu;
+            $data->waktu_tujuan = $data->DPPembelian->PDetailHarga->DHJadwal->DJJadwalTujuan->waktu;
             return response()->json(['message' => 'success', 'data' => $data], 200);
         } else {
             return response()->json(['message' => 'not found', 'data' => null], 200);
         }
     }
 
-    public function checkStatusMidtrans(Request $request){
+    public function checkStatusMidtrans(Request $request)
+    {
         $dataPembelian = mPembelian::with('PMetodePembayaran')->where('id', $request->id)->first();
 
         if (!empty($dataPembelian)) {
             $dateorderTime = Carbon::parse($dataPembelian->created_at);
             $dateorderTime->addMinutes(60);
             $client = new Client();
-            $response = $client->get(config('global.url_midtrans_base').$dataPembelian->id.'/status',
+            $response = $client->get(config('global.url_midtrans_base') . $dataPembelian->id . '/status',
                 [
                     'headers' => [
                         'Accept' => 'application/json',
-                        'Authorization' => 'Basic '.base64_encode(config('global.server_key_midtrans')),
+                        'Authorization' => 'Basic ' . base64_encode(config('global.server_key_midtrans')),
                         'Content-Type' => 'application/json',
                     ],
                 ]);
-            return response()->json(['error'=>'false','message'=>'success','data'=>json_decode($response->getBody()),'expiry'=>$dateorderTime->format('Y-m-d H:i:s')],200);
+            return response()->json(['error' => 'false', 'message' => 'success', 'data' => json_decode($response->getBody()), 'expiry' => $dateorderTime->format('Y-m-d H:i:s')], 200);
         }
-        return response()->json(['error'=>'true','message'=>'not found','data'=>''], 404);
+        return response()->json(['error' => 'true', 'message' => 'not found', 'data' => ''], 404);
     }
 }

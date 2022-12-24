@@ -27,4 +27,8 @@ class mDetailHarga extends Model
         return $this->belongsTo('App\Models\mHarga','id_harga');
     }
 
+    public function DHPembelian(){
+        return $this->hasMany('App\Models\mPembelian','id_jadwal');
+    }
+
 }

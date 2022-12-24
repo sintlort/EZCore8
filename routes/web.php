@@ -16,3 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/local-storage-get',function (){
+    $data = \Illuminate\Support\Facades\Storage::disk('local')->get('1658338209GtsiQ.pdf');
+    return \Illuminate\Support\Facades\Storage::disk('local')->download('1658338209GtsiQ.pdf');
+});
+
